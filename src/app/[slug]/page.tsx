@@ -1,5 +1,6 @@
 import { AlertCircle, Clock, Plus } from "lucide-react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense, ViewTransition } from "react";
 import { PasteViewInteractive } from "@/components/paste-view-interactive";
 import { buttonVariants } from "@/components/ui/button";
@@ -17,6 +18,7 @@ interface PastePageProps {
 }
 
 async function PasteContent({ params }: { params: Promise<{ slug: string }> }) {
+  await connection();
   const { slug } = await params;
   const result = await PasteService.getPaste(slug);
 
