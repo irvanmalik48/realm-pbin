@@ -2,8 +2,25 @@ import { formatDistanceToNow } from "date-fns";
 import { Clock, Eye, FileCode2, Lock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Paste } from "@/lib/types";
 import { formatBytes } from "@/lib/utils";
+
+export function PasteCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-4 w-12" />
+      </div>
+      <Skeleton className="h-5 w-3/4" />
+      <div className="mt-2 flex items-center justify-between pt-2 border-t border-border/40">
+        <Skeleton className="h-4 w-14" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+    </div>
+  );
+}
 
 interface PasteCardProps {
   paste: Paste;
@@ -16,9 +33,9 @@ export function PasteCard({ paste }: PasteCardProps) {
 
   return (
     <Link
-      href={`/p/${encodeURIComponent(paste.slug)}`}
+      href={`/${encodeURIComponent(paste.slug)}`}
       transitionTypes={["nav-forward"]}
-      className="group flex flex-col justify-between rounded-xl border border-border/80 bg-card p-4 transition-all hover:border-border hover:shadow-md hover:-translate-y-0.5"
+      className="group flex flex-col justify-between rounded-xl border border-border/80 bg-card p-4 transition-colors duration-150 hover:border-border hover:shadow-md hover:-translate-y-0.5"
     >
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
@@ -34,7 +51,7 @@ export function PasteCard({ paste }: PasteCardProps) {
               className="text-amber-500 border-amber-500/30 gap-1 text-[11px]"
             >
               <Lock className="size-3" />
-              Encrypted
+              Password Protected
             </Badge>
           )}
         </div>
