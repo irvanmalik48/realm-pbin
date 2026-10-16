@@ -1,5 +1,6 @@
-import { Code2, Compass, Plus } from "lucide-react";
+import { Code2, Compass, Plus, Settings2 } from "lucide-react";
 import Link from "next/link";
+import { SiteSettingsDialog } from "@/components/site-settings-dialog";
 import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 
@@ -48,6 +49,14 @@ export function Header() {
               <Compass className="size-3.5" data-icon="inline-start" />
               Explore
             </Link>
+            <Link
+              href="/settings"
+              transitionTypes={["nav-forward"]}
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
+            >
+              <Settings2 className="size-3.5" data-icon="inline-start" />
+              Settings
+            </Link>
           </nav>
         </div>
 
@@ -65,6 +74,7 @@ export function Header() {
             <Compass className="size-3.5" data-icon="inline-start" />
             Explore
           </Link>
+          <SiteSettingsDialog />
           <ThemeToggleButton />
         </div>
       </div>
