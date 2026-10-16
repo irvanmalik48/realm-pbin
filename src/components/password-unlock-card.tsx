@@ -49,9 +49,8 @@ export function PasswordUnlockCard({
       }
     } catch {
       setError("Error unlocking paste. Please try again.");
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
