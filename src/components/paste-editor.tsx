@@ -6,10 +6,10 @@ import {
   EyeOff,
   Globe,
   Hourglass,
+  Keyboard,
   Lock,
   Plus,
   RotateCcw,
-  Sparkles,
   Upload,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -508,7 +508,7 @@ export function PasteEditor({
         {/* Editor Bottom Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 bg-muted/20 px-4 py-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Sparkles className="size-3.5 text-primary" />
+            <Keyboard className="size-3.5 text-muted-foreground" />
             <span className="hidden sm:inline">Keyboard shortcut: </span>
             <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border">
               Ctrl+Enter
