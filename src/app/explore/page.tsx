@@ -1,5 +1,6 @@
 import { Compass, FileCode, Plus } from "lucide-react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense, ViewTransition } from "react";
 import { ExploreFilters } from "@/components/explore-filters";
 import { PasteCard, PasteCardSkeleton } from "@/components/paste-card";
@@ -25,6 +26,7 @@ async function ExploreList({
 }: {
   searchParams: Promise<{ search?: string; syntax?: string }>;
 }) {
+  await connection();
   const { search, syntax } = await searchParams;
   const result = await PasteService.listPastes({
     search,
