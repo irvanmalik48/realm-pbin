@@ -1,5 +1,6 @@
 import { Compass } from "lucide-react";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense, ViewTransition } from "react";
 import { PasteCard, PasteCardSkeleton } from "@/components/paste-card";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 import { PasteService } from "@/lib/paste-service";
 
 async function RecentPastesList() {
+  await connection();
   const data = await PasteService.listPastes({ limit: 8 });
   const pastes = data.pastes;
 
