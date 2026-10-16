@@ -22,20 +22,30 @@ interface CodeViewerProps {
   slug: string;
 }
 
+function subscribeHash(callback: () => void) {
+  window.addEventListener("hashchange", callback);
+  return () => window.removeEventListener("hashchange", callback);
+}
+
+function getHashSnapshot(): number | null {
+  const match = window.location.hash.match(/^#L(\d+)$/);
+  return match?.[1] ? Number.parseInt(match[1], 10) : null;
+}
+
+function getServerHashSnapshot(): number | null {
+  return null;
+}
+
 export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
   const [copied, setCopied] = React.useState(false);
   const [lineWrap, setLineWrap] = React.useState(false);
   const [selectedLine, setSelectedLine] = React.useState<number | null>(null);
-
-  // Sync with window.location.hash on mount
-  React.useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      const match = window.location.hash.match(/^#L(\d+)$/);
-      if (match?.[1]) {
-        setSelectedLine(Number.parseInt(match[1], 10));
-      }
-    }
-  }, []);
+  const hashLine = React.useSyncExternalStore(
+    subscribeHash,
+    getHashSnapshot,
+    getServerHashSnapshot,
+  );
+  const activeLine = selectedLine ?? hashLine;
 
   const highlightedHtml = React.useMemo(() => {
     return highlightCode(code, syntax);
@@ -45,9 +55,14 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
     return code.split("\n");
   }, [code]);
 
-  const highlightedLines = React.useMemo(() => {
-    return highlightedHtml.split("\n");
-  }, [highlightedHtml]);
+  const lineItems = React.useMemo(() => {
+    const splitLines = highlightedHtml.split("\n");
+    return splitLines.map((lineHtml, i) => ({
+      key: `${slug}-line-${i + 1}`,
+      lineNum: i + 1,
+      lineHtml,
+    }));
+  }, [highlightedHtml, slug]);
 
   const handleCopy = async () => {
     try {
@@ -78,7 +93,7 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
   };
 
   const handleLineClick = (lineNum: number) => {
-    if (selectedLine === lineNum) {
+    if (activeLine === lineNum) {
       setSelectedLine(null);
       if (typeof window !== "undefined") {
         window.history.replaceState(null, "", window.location.pathname);
@@ -178,13 +193,12 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
           )}
         >
           <code className={`language-${syntax} block`}>
-            {highlightedLines.map((lineHtml, idx) => {
-              const lineNum = idx + 1;
-              const isSelected = selectedLine === lineNum;
+            {lineItems.map((item) => {
+              const isSelected = activeLine === item.lineNum;
               return (
                 <div
-                  key={`line-${lineNum}`}
-                  id={`L${lineNum}`}
+                  key={item.key}
+                  id={`L${item.lineNum}`}
                   className={cn(
                     "flex group hover:bg-muted/40 transition-colors -mx-4 px-4 py-0.5",
                     isSelected && "bg-accent/70 border-l-2 border-primary",
@@ -192,20 +206,20 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
                 >
                   <button
                     type="button"
-                    onClick={() => handleLineClick(lineNum)}
+                    onClick={() => handleLineClick(item.lineNum)}
                     className={cn(
                       "w-10 select-none text-right pr-4 text-xs font-mono tabular-nums text-muted-foreground/60 transition-colors group-hover:text-muted-foreground cursor-pointer focus:outline-none",
                       isSelected && "text-primary font-semibold",
                     )}
-                    aria-label={`Line ${lineNum}`}
+                    aria-label={`Line ${item.lineNum}`}
                   >
-                    {lineNum}
+                    {item.lineNum}
                   </button>
                   <span
                     className="flex-1 overflow-x-visible"
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: safe prism highlighted output
                     dangerouslySetInnerHTML={{
-                      __html: lineHtml || " ",
+                      __html: item.lineHtml || " ",
                     }}
                   />
                 </div>
