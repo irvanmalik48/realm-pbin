@@ -1,7 +1,7 @@
 import { Compass } from "lucide-react";
 import Link from "next/link";
 import { Suspense, ViewTransition } from "react";
-import { PasteCard } from "@/components/paste-card";
+import { PasteCard, PasteCardSkeleton } from "@/components/paste-card";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Empty,
@@ -9,7 +9,6 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Skeleton } from "@/components/ui/skeleton";
 import { PasteService } from "@/lib/paste-service";
 
 async function RecentPastesList() {
@@ -47,20 +46,7 @@ function RecentPastesSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {RECENT_SKELETON_KEYS.map((key) => (
-        <div
-          key={key}
-          className="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-3"
-        >
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-5 w-16 rounded-full" />
-            <Skeleton className="h-4 w-12" />
-          </div>
-          <Skeleton className="h-5 w-3/4" />
-          <div className="mt-2 flex items-center justify-between pt-2 border-t border-border/40">
-            <Skeleton className="h-4 w-14" />
-            <Skeleton className="h-4 w-20" />
-          </div>
-        </div>
+        <PasteCardSkeleton key={key} />
       ))}
     </div>
   );
