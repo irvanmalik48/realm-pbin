@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { CustomScrollbar } from "@/components/custom-scrollbar";
 import { Header } from "@/components/header";
+import { LenisProvider } from "@/components/lenis-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -82,17 +84,22 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <Header />
-            <main className="flex flex-1 flex-col w-full">{children}</main>
-            <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground w-full">
-              <div className="w-full flex flex-col items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 sm:flex-row">
-                <p>Realm Pastebin. Simple, fast, and secure snippet sharing.</p>
-                <p className="flex items-center gap-1 font-mono text-[11px]">
-                  Fast & lightweight
-                </p>
-              </div>
-            </footer>
-            <Toaster position="bottom-right" richColors />
+            <LenisProvider>
+              <Header />
+              <main className="flex flex-1 flex-col w-full">{children}</main>
+              <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground w-full">
+                <div className="w-full flex flex-col items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 sm:flex-row">
+                  <p>
+                    Realm Pastebin. Simple, fast, and secure snippet sharing.
+                  </p>
+                  <p className="flex items-center gap-1 font-mono text-[11px]">
+                    Fast & lightweight
+                  </p>
+                </div>
+              </footer>
+              <CustomScrollbar />
+              <Toaster position="bottom-right" richColors />
+            </LenisProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>
