@@ -35,8 +35,8 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn(
         "group/calendar bg-background p-3 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(8)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
-        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
-        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
+        "rtl:**:[.rdp-button\\_next>svg]:rotate-180",
+        "rtl:**:[.rdp-button\\_previous>svg]:rotate-180",
         className,
       )}
       captionLayout={captionLayout}
@@ -204,7 +204,7 @@ function CalendarDayButton({
     <Button
       variant="ghost"
       size="icon"
-      data-day={day.date.toLocaleDateString(locale?.code)}
+      data-day={day.date.toISOString().slice(0, 10)}
       data-selected-single={
         modifiers.selected &&
         !modifiers.range_start &&
