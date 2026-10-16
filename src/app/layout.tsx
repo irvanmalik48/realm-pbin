@@ -19,24 +19,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-function getMetadataBase(): URL {
-  const fallback = "http://localhost:3000";
+function getMetadataBase(): URL | undefined {
+  const url =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
+  if (!url) return undefined;
   try {
-    const raw =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.NODE_ENV === "production"
-        ? "https://paste.irvanma.eu.org"
-        : fallback);
-    return new URL(raw);
+    return new URL(url.startsWith("http") ? url : `https://${url}`);
   } catch {
-    return new URL(fallback);
+    return undefined;
   }
 }
 
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
   title: {
-    default: "Realm Pastebin — Fast, Clean & Simple Snippet Sharing",
+    default: "Realm Pastebin | Fast, Clean & Simple Snippet Sharing",
     template: "%s | Realm Pastebin",
   },
   description:
@@ -87,9 +86,7 @@ export default function RootLayout({
             <main className="flex flex-1 flex-col w-full">{children}</main>
             <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground w-full">
               <div className="w-full flex flex-col items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 sm:flex-row">
-                <p>
-                  Realm Pastebin — Simple, fast, and secure snippet sharing.
-                </p>
+                <p>Realm Pastebin. Simple, fast, and secure snippet sharing.</p>
                 <p className="flex items-center gap-1 font-mono text-[11px]">
                   Fast & lightweight
                 </p>
