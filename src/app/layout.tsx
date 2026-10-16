@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -19,10 +19,48 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+function getMetadataBase(): URL {
+  const fallback = "http://localhost:3000";
+  try {
+    const raw =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://paste.irvanma.eu.org"
+        : fallback);
+    return new URL(raw);
+  } catch {
+    return new URL(fallback);
+  }
+}
+
 export const metadata: Metadata = {
-  title: "Realm Pastebin — Fast, Clean & Simple Snippet Sharing",
+  metadataBase: getMetadataBase(),
+  title: {
+    default: "Realm Pastebin — Fast, Clean & Simple Snippet Sharing",
+    template: "%s | Realm Pastebin",
+  },
   description:
     "A clean, fast pastebin for code and text snippets with syntax highlighting and password protection.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Realm Pastebin",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  initialScale: 1,
+  width: "device-width",
 };
 
 export default function RootLayout({
