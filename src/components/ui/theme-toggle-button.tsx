@@ -4,19 +4,24 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-
 import { cn } from "@/lib/utils";
+
+const emptySubscribe = () => () => {};
+
+function useMounted() {
+  return React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
 
 export function ThemeToggleButton({
   className,
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const toggleTheme = () => {
     const currentTheme = resolvedTheme || theme;
