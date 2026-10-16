@@ -2,7 +2,7 @@ import { Compass, FileCode, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense, ViewTransition } from "react";
 import { ExploreFilters } from "@/components/explore-filters";
-import { PasteCard } from "@/components/paste-card";
+import { PasteCard, PasteCardSkeleton } from "@/components/paste-card";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Empty,
@@ -84,20 +84,7 @@ function ExploreSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {EXPLORE_SKELETON_KEYS.map((key) => (
-        <div
-          key={key}
-          className="rounded-xl border border-border/60 bg-card p-4 flex flex-col gap-3"
-        >
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-5 w-16 rounded-full" />
-            <Skeleton className="h-4 w-12" />
-          </div>
-          <Skeleton className="h-5 w-3/4" />
-          <div className="mt-2 flex items-center justify-between pt-2 border-t border-border/40">
-            <Skeleton className="h-4 w-14" />
-            <Skeleton className="h-4 w-20" />
-          </div>
-        </div>
+        <PasteCardSkeleton key={key} />
       ))}
     </div>
   );
