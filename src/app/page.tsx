@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Code2 } from "lucide-react";
 import { Suspense, ViewTransition } from "react";
 import { PasteEditor } from "@/components/paste-editor";
 import { RecentPastesSection } from "@/components/recent-pastes-section";
@@ -75,7 +75,7 @@ export default function HomePage(props: HomePageProps) {
         {/* Page Header */}
         <div className="mb-6 flex flex-col gap-1.5">
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
-            <Sparkles className="size-3.5" />
+            <Code2 className="size-3.5" />
             Pastebin
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
