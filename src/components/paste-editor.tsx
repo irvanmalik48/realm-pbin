@@ -197,12 +197,15 @@ export function PasteEditor({
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to create paste");
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error || "Failed to create paste");
+        setIsSubmitting(false);
+        return;
       }
 
       const created = await res.json();
       toast.success("Paste created!");
+      setIsSubmitting(false);
 
       // Navigate with View Transition
       if (
@@ -210,15 +213,13 @@ export function PasteEditor({
         "startViewTransition" in document
       ) {
         (document as any).startViewTransition(() => {
-          router.push(`/p/${created.slug}`);
+          router.push(`/${created.slug}`);
         });
       } else {
-        router.push(`/p/${created.slug}`);
+        router.push(`/${created.slug}`);
       }
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : "An unexpected error occurred";
-      toast.error(msg);
+    } catch {
+      toast.error("An unexpected error occurred");
       setIsSubmitting(false);
     }
   };
@@ -480,6 +481,7 @@ export function PasteEditor({
           {/* Textarea */}
           <textarea
             ref={textareaRef}
+            aria-label="Code or text content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onScroll={handleScroll}
