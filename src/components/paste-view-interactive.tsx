@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import {
   Calendar,
   Clock,
@@ -55,14 +55,7 @@ export function PasteViewInteractive({
     addSuffix: true,
   });
 
-  const formattedDate = new Date(paste.created_at).toLocaleDateString(
-    undefined,
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    },
-  );
+  const formattedDate = format(new Date(paste.created_at), "MMM d, yyyy");
 
   const forkUrl = `/?title=${encodeURIComponent(`Copy of ${paste.title}`)}&syntax=${encodeURIComponent(paste.syntax)}&content=${encodeURIComponent(paste.content)}`;
 
