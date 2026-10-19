@@ -11,7 +11,6 @@ import {
 import * as React from "react";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { highlightCode } from "@/lib/syntax-highlighter";
 import { SUPPORTED_LANGUAGES } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +19,16 @@ interface CodeViewerProps {
   syntax: string;
   title: string;
   slug: string;
+  initialLines?: string[];
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function subscribeHash(callback: () => void) {
@@ -36,7 +45,13 @@ function getServerHashSnapshot(): number | null {
   return null;
 }
 
-export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
+export function CodeViewer({
+  code,
+  syntax,
+  title,
+  slug,
+  initialLines,
+}: CodeViewerProps) {
   const [copied, setCopied] = React.useState(false);
   const [lineWrap, setLineWrap] = React.useState(false);
   const [selectedLine, setSelectedLine] = React.useState<number | null>(null);
@@ -47,22 +62,48 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
   );
   const activeLine = selectedLine ?? hashLine;
 
-  const highlightedHtml = React.useMemo(() => {
-    return highlightCode(code, syntax);
-  }, [code, syntax]);
+  const [highlightedLines, setHighlightedLines] = React.useState<string[]>(
+    () => initialLines || [],
+  );
 
-  const lines = React.useMemo(() => {
+  React.useEffect(() => {
+    if (initialLines && initialLines.length > 0) {
+      setHighlightedLines(initialLines);
+      return;
+    }
+
+    if (!code) return;
+
+    let isMounted = true;
+    fetch("/api/v1/highlight", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, syntax }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data.lines)) {
+          setHighlightedLines(data.lines);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [code, syntax, initialLines]);
+
+  const rawLines = React.useMemo(() => {
     return code.split("\n");
   }, [code]);
 
   const lineItems = React.useMemo(() => {
-    const splitLines = highlightedHtml.split("\n");
-    return splitLines.map((lineHtml, i) => ({
+    return rawLines.map((rawLine, i) => ({
       key: `${slug}-line-${i + 1}`,
       lineNum: i + 1,
-      lineHtml,
+      lineHtml: highlightedLines[i] ?? escapeHtml(rawLine),
     }));
-  }, [highlightedHtml, slug]);
+  }, [rawLines, highlightedLines, slug]);
 
   const handleCopy = async () => {
     try {
@@ -119,7 +160,8 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
           </div>
           <span className="font-mono text-xs text-muted-foreground ml-1.5 flex items-center gap-1">
             <FileCode className="size-3.5" />
-            {syntax} • {lines.length} {lines.length === 1 ? "line" : "lines"}
+            {syntax} • {rawLines.length}{" "}
+            {rawLines.length === 1 ? "line" : "lines"}
           </span>
         </div>
 
@@ -216,8 +258,8 @@ export function CodeViewer({ code, syntax, title, slug }: CodeViewerProps) {
                     {item.lineNum}
                   </button>
                   <span
-                    className="flex-1 overflow-x-visible"
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: safe prism highlighted output
+                    className="flex-1 overflow-x-visible shiki-code font-mono text-[13px]"
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: safe shiki highlighted output
                     dangerouslySetInnerHTML={{
                       __html: item.lineHtml || " ",
                     }}
