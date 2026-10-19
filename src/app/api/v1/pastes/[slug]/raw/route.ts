@@ -1,17 +1,23 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { resolveSlugAndSyntaxOverride } from "@/lib/language-detector";
 import { PasteService } from "@/lib/paste-service";
 
 export async function GET(
   request: NextRequest,
   segmentData: { params: Promise<{ slug: string }> },
 ) {
-  const { slug } = await segmentData.params;
+  const { slug: rawSlug } = await segmentData.params;
+  const { baseSlug } = resolveSlugAndSyntaxOverride(rawSlug);
   const password =
     request.headers.get("X-Paste-Password") ||
     request.nextUrl.searchParams.get("password") ||
     undefined;
 
-  const result = await PasteService.getPaste(slug, password);
+  let result = await PasteService.getPaste(baseSlug, password);
+
+  if (result.status === 404 && baseSlug !== rawSlug) {
+    result = await PasteService.getPaste(rawSlug, password);
+  }
 
   if (result.status === 404) {
     return new NextResponse("404: Paste not found", {
