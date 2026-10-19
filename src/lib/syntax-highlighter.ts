@@ -1,56 +1,105 @@
-import Prism from "prismjs";
+import { codeToHtml } from "shiki";
 
-// Import commonly used prism grammars
-import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-jsx";
-import "prismjs/components/prism-tsx";
-import "prismjs/components/prism-python";
-import "prismjs/components/prism-go";
-import "prismjs/components/prism-rust";
-import "prismjs/components/prism-json";
-import "prismjs/components/prism-yaml";
-import "prismjs/components/prism-bash";
-import "prismjs/components/prism-sql";
-import "prismjs/components/prism-markdown";
-import "prismjs/components/prism-c";
-import "prismjs/components/prism-cpp";
-import "prismjs/components/prism-csharp";
-import "prismjs/components/prism-java";
-import "prismjs/components/prism-php";
-import "prismjs/components/prism-ruby";
-import "prismjs/components/prism-docker";
-import "prismjs/components/prism-nginx";
-import "prismjs/components/prism-diff";
+export const SHIKI_LANG_MAP: Record<string, string> = {
+  plaintext: "plaintext",
+  txt: "plaintext",
+  text: "plaintext",
+  typescript: "typescript",
+  ts: "typescript",
+  javascript: "javascript",
+  js: "javascript",
+  tsx: "tsx",
+  jsx: "jsx",
+  python: "python",
+  py: "python",
+  go: "go",
+  golang: "go",
+  rust: "rust",
+  rs: "rust",
+  json: "json",
+  jsonc: "json",
+  json5: "json",
+  yaml: "yaml",
+  yml: "yaml",
+  html: "html",
+  htm: "html",
+  xhtml: "html",
+  css: "css",
+  scss: "css",
+  sass: "css",
+  less: "css",
+  sql: "sql",
+  bash: "bash",
+  sh: "bash",
+  shell: "bash",
+  zsh: "bash",
+  ksh: "bash",
+  markdown: "markdown",
+  md: "markdown",
+  c: "c",
+  h: "c",
+  cpp: "cpp",
+  cc: "cpp",
+  cxx: "cpp",
+  hpp: "cpp",
+  csharp: "csharp",
+  cs: "csharp",
+  java: "java",
+  php: "php",
+  ruby: "ruby",
+  rb: "ruby",
+  dockerfile: "dockerfile",
+  docker: "dockerfile",
+  nginx: "nginx",
+  conf: "nginx",
+  env: "dotenv",
+  dotenv: "dotenv",
+  diff: "diff",
+  patch: "diff",
+};
 
-export function highlightCode(code: string, syntax: string): string {
-  const normalizedSyntax = syntax.toLowerCase();
-  const grammar =
-    Prism.languages[normalizedSyntax] ||
-    (normalizedSyntax === "sh" ? Prism.languages.bash : null) ||
-    (normalizedSyntax === "shell" ? Prism.languages.bash : null) ||
-    (normalizedSyntax === "dockerfile" ? Prism.languages.docker : null) ||
-    (normalizedSyntax === "env" ? Prism.languages.bash : null) ||
-    (normalizedSyntax === "cs" ? Prism.languages.csharp : null) ||
-    (normalizedSyntax === "golang" ? Prism.languages.go : null) ||
-    Prism.languages.plaintext;
-
-  if (!grammar) {
-    return escapeHtml(code);
-  }
-
-  try {
-    return Prism.highlight(code, grammar, normalizedSyntax);
-  } catch {
-    return escapeHtml(code);
-  }
-}
-
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+/**
+ * Highlights source code using Shiki with dual themes (github-light & github-dark).
+ * Returns an array of HTML strings corresponding to each line.
+ */
+export async function highlightCodeToLines(
+  code: string,
+  syntax: string,
+): Promise<string[]> {
+  const normalized = syntax ? syntax.toLowerCase() : "plaintext";
+  const lang = SHIKI_LANG_MAP[normalized] || "plaintext";
+
+  try {
+    const html = await codeToHtml(code, {
+      lang,
+      themes: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+      defaultColor: false,
+    });
+
+    const codeStart = html.indexOf("<code>");
+    const codeEnd = html.lastIndexOf("</code>");
+    if (codeStart === -1 || codeEnd === -1) {
+      return code.split("\n").map(escapeHtml);
+    }
+
+    const inner = html.slice(codeStart + 6, codeEnd);
+    const rawLines = inner.split("\n");
+    return rawLines.map((line) => {
+      return line.replace(/^<span class="line">/, "").replace(/<\/span>$/, "");
+    });
+  } catch {
+    return code.split("\n").map(escapeHtml);
+  }
 }
