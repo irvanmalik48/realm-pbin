@@ -23,12 +23,17 @@ import { formatBytes } from "@/lib/utils";
 
 interface PasteViewInteractiveProps {
   initialPaste: Paste;
+  initialLines?: string[];
 }
 
 export function PasteViewInteractive({
   initialPaste,
+  initialLines,
 }: PasteViewInteractiveProps) {
   const [paste, setPaste] = React.useState<Paste>(initialPaste);
+  const [highlightedLines, setHighlightedLines] = React.useState<string[]>(
+    () => initialLines || [],
+  );
   const [isUnlocked, setIsUnlocked] = React.useState(
     Boolean(initialPaste.content),
   );
@@ -45,6 +50,9 @@ export function PasteViewInteractive({
           ...data,
           syntax: initialPaste.syntax || data.syntax,
         });
+        if (Array.isArray(data.highlighted_lines)) {
+          setHighlightedLines(data.highlighted_lines);
+        }
         setIsUnlocked(true);
         return true;
       }
@@ -176,6 +184,7 @@ export function PasteViewInteractive({
           syntax={paste.syntax}
           title={paste.title}
           slug={paste.slug}
+          initialLines={highlightedLines}
         />
       )}
     </div>
