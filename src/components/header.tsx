@@ -1,4 +1,4 @@
-import { Code2, Compass, Plus, Settings2 } from "lucide-react";
+import { Code2, Plus, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { SiteSettingsDialog } from "@/components/site-settings-dialog";
 import { buttonVariants } from "@/components/ui/button";
@@ -42,14 +42,6 @@ export function Header() {
               New Paste
             </Link>
             <Link
-              href="/explore"
-              transitionTypes={["nav-forward"]}
-              className={buttonVariants({ variant: "ghost", size: "sm" })}
-            >
-              <Compass className="size-3.5" data-icon="inline-start" />
-              Explore
-            </Link>
-            <Link
               href="/settings"
               transitionTypes={["nav-forward"]}
               className={buttonVariants({ variant: "ghost", size: "sm" })}
@@ -62,18 +54,6 @@ export function Header() {
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          <Link
-            href="/explore"
-            transitionTypes={["nav-forward"]}
-            className={buttonVariants({
-              variant: "outline",
-              size: "sm",
-              className: "sm:hidden",
-            })}
-          >
-            <Compass className="size-3.5" data-icon="inline-start" />
-            Explore
-          </Link>
           <SiteSettingsDialog />
           <ThemeToggleButton />
         </div>
