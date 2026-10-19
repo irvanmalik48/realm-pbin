@@ -81,21 +81,6 @@ export function PasteViewInteractive({
                   Password Protected
                 </Badge>
               )}
-              {paste.is_public ? (
-                <Badge
-                  variant="outline"
-                  className="text-muted-foreground text-xs"
-                >
-                  Public
-                </Badge>
-              ) : (
-                <Badge
-                  variant="outline"
-                  className="text-muted-foreground text-xs"
-                >
-                  Unlisted
-                </Badge>
-              )}
             </div>
 
             {/* Shared Element Text Morph on Paste Title */}
