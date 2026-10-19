@@ -11,6 +11,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
+import { resolveSlugAndSyntaxOverride } from "@/lib/language-detector";
 import { PasteService } from "@/lib/paste-service";
 
 interface PastePageProps {
@@ -19,8 +20,15 @@ interface PastePageProps {
 
 async function PasteContent({ params }: { params: Promise<{ slug: string }> }) {
   await connection();
-  const { slug } = await params;
-  const result = await PasteService.getPaste(slug);
+  const { slug: rawSlug } = await params;
+  const { baseSlug, syntaxOverride } = resolveSlugAndSyntaxOverride(rawSlug);
+
+  let result = await PasteService.getPaste(baseSlug);
+
+  // If baseSlug lookup 404s and rawSlug is different, try looking up rawSlug directly
+  if (result.status === 404 && baseSlug !== rawSlug) {
+    result = await PasteService.getPaste(rawSlug);
+  }
 
   if (result.status === 404 || !result.paste) {
     return (
@@ -31,8 +39,8 @@ async function PasteContent({ params }: { params: Promise<{ slug: string }> }) {
           </div>
           <EmptyTitle>Paste Not Found</EmptyTitle>
           <EmptyDescription>
-            The snippet with slug <code className="font-mono">{slug}</code> does
-            not exist or may have been deleted.
+            The snippet with slug <code className="font-mono">{rawSlug}</code>{" "}
+            does not exist or may have been deleted.
           </EmptyDescription>
           <div className="mt-4 flex justify-center">
             <Link
@@ -75,7 +83,14 @@ async function PasteContent({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
-  return <PasteViewInteractive initialPaste={result.paste} />;
+  const initialPaste = syntaxOverride
+    ? {
+        ...result.paste,
+        syntax: syntaxOverride,
+      }
+    : result.paste;
+
+  return <PasteViewInteractive initialPaste={initialPaste} />;
 }
 
 function PasteSkeleton() {
