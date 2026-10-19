@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { resolveSlugAndSyntaxOverride } from "@/lib/language-detector";
 import { PasteService } from "@/lib/paste-service";
+import { highlightCodeToLines } from "@/lib/syntax-highlighter";
 
 export async function GET(
   request: NextRequest,
@@ -37,10 +38,21 @@ export async function GET(
     );
   }
 
+  let highlighted_lines: string[] | undefined;
+  const syntax =
+    syntaxOverride || (result.paste ? result.paste.syntax : "plaintext");
+  if (result.paste?.content) {
+    highlighted_lines = await highlightCodeToLines(
+      result.paste.content,
+      syntax,
+    );
+  }
+
   const paste = result.paste
     ? {
         ...result.paste,
         ...(syntaxOverride ? { syntax: syntaxOverride } : {}),
+        ...(highlighted_lines ? { highlighted_lines } : {}),
       }
     : null;
 
