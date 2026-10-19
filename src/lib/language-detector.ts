@@ -246,7 +246,7 @@ export function detectLanguage(code: string, filename?: string): string {
   ) {
     return "diff";
   }
-  if (/^FROM\s+[a-zA-Z0-9_./:-]+/m.test(trimmed)) {
+  if (/^FROM\s+[\w./:-]+/m.test(trimmed)) {
     return "dockerfile";
   }
 
@@ -284,65 +284,65 @@ export function detectLanguage(code: string, filename?: string): string {
   };
 
   // Python patterns
-  if (/\bdef\s+[a-zA-Z_0-9]+\s*\([^)]*\)\s*:/.test(trimmed))
-    scores.python += 10;
+  if (/\bdef\s+\w+\s*\([^)]*\)\s*:/.test(trimmed)) scores.python += 10;
   if (/\bif\s+__name__\s*==\s*['"]__main__['"]\s*:/.test(trimmed))
     scores.python += 10;
-  if (/\bfrom\s+[a-zA-Z0-9_.]+\s+import\s+/.test(trimmed)) scores.python += 8;
+  if (/\bfrom\s+[\w.]+\s+import\s+/.test(trimmed)) scores.python += 8;
   if (
-    /\bimport\s+[a-zA-Z0-9_]+(\s+as\s+[a-zA-Z0-9_]+)?$/.test(trimmed) ||
-    /\bimport\s+[a-zA-Z0-9_]+/.test(trimmed)
+    /\bimport\s+\w+(?:\s+as\s+\w+)?$/.test(trimmed) ||
+    /\bimport\s+\w+/.test(trimmed)
   )
     scores.python += 4;
-  if (/\belif\s+.*:/.test(trimmed)) scores.python += 7;
-  if (/\b(True|False|None)\b/.test(trimmed)) scores.python += 3;
-  if (/\bself\.[a-zA-Z0-9_]+/.test(trimmed)) scores.python += 4;
+  if (/\belif\s+(?:\S.*)?:/.test(trimmed)) scores.python += 7;
+  if (/\b(?:True|False|None)\b/.test(trimmed)) scores.python += 3;
+  if (/\bself\.\w+/.test(trimmed)) scores.python += 4;
   if (/\bprint\s*\(/.test(trimmed)) scores.python += 2;
 
   // Go patterns
-  if (/\bpackage\s+[a-zA-Z0-9_]+/.test(trimmed)) scores.go += 10;
-  if (/\bfunc\s+(\([a-zA-Z0-9_* ]+\)\s+)?[a-zA-Z0-9_]+\s*\(/.test(trimmed))
-    scores.go += 8;
-  if (/\bimport\s+(\([^)]+\)|"[^"]+")/.test(trimmed)) scores.go += 6;
+  if (/\bpackage\s+\w+/.test(trimmed)) scores.go += 10;
+  if (/\bfunc\s+(?:\([\w* ]+\)\s+)?\w+\s*\(/.test(trimmed)) scores.go += 8;
+  if (/\bimport\s+(?:\([^)]+\)|"[^"]+")/.test(trimmed)) scores.go += 6;
   if (/:=/.test(trimmed)) scores.go += 4;
-  if (/\bfmt\.(Println|Printf|Sprintf|Errorf)\b/.test(trimmed)) scores.go += 8;
-  if (/\b(chan|defer|iota)\b/.test(trimmed)) scores.go += 5;
+  if (/\bfmt\.(?:Println|Printf|Sprintf|Errorf)\b/.test(trimmed))
+    scores.go += 8;
+  if (/\b(?:chan|defer|iota)\b/.test(trimmed)) scores.go += 5;
 
   // Rust patterns
-  if (/\bfn\s+[a-zA-Z0-9_]+\s*(<[^>]*>)?\s*\(/.test(trimmed)) scores.rust += 10;
+  if (/\bfn\s+\w+\s*(?:<[^>]*>\s*)?\(/.test(trimmed)) scores.rust += 10;
   if (/\blet\s+mut\s+/.test(trimmed)) scores.rust += 10;
-  if (/\bimpl(\s+.*)?\s+for\s+/.test(trimmed)) scores.rust += 10;
-  if (/\buse\s+(std|crate)::/.test(trimmed)) scores.rust += 8;
+  if (/\bimpl(?:\s+[^\s{]+)?\s+for\s+/.test(trimmed)) scores.rust += 10;
+  if (/\buse\s+(?:std|crate)::/.test(trimmed)) scores.rust += 8;
   if (/\bprintln!\s*\(/.test(trimmed)) scores.rust += 8;
-  if (/\bpub(\(crate\))?\s+(fn|struct|enum|trait|type|const)\b/.test(trimmed))
+  if (
+    /\bpub(?:\(crate\))?\s+(?:fn|struct|enum|trait|type|const)\b/.test(trimmed)
+  )
     scores.rust += 8;
-  if (/\bmatch\s+.*\{\s*/.test(trimmed)) scores.rust += 5;
+  if (/\bmatch\s+(?:\S.*)?\{\s*/.test(trimmed)) scores.rust += 5;
 
   // SQL patterns
   if (
-    /\b(SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/i.test(
+    /\b(?:SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/i.test(
       trimmed,
     )
   )
     scores.sql += 10;
   if (
-    /\b(FROM|WHERE|GROUP\s+BY|ORDER\s+BY|HAVING|INNER\s+JOIN|LEFT\s+JOIN|RIGHT\s+JOIN)\b/i.test(
+    /\b(?:FROM|WHERE|GROUP\s+BY|ORDER\s+BY|HAVING|INNER\s+JOIN|LEFT\s+JOIN|RIGHT\s+JOIN)\b/i.test(
       trimmed,
     )
   )
     scores.sql += 6;
 
   // CSS patterns
-  if (/([.#][a-zA-Z0-9_-]+|\*|body|html|div)\s*\{[^}]*:[^}]*\}/.test(trimmed))
+  if (/(?:[.#][\w-]+|\*|body|html|div)\s*\{[^:}]*:[^}]*\}/.test(trimmed))
     scores.css += 8;
   if (/@media\s*\(/.test(trimmed)) scores.css += 8;
   if (/@keyframes\s+/.test(trimmed)) scores.css += 8;
-  if (/\b(px|rem|em|vh|vw|var\(--[a-zA-Z0-9_-]+\))\b/.test(trimmed))
-    scores.css += 4;
+  if (/\b(?:px|rem|em|vh|vw|var\(--[\w-]+\))\b/.test(trimmed)) scores.css += 4;
 
   // HTML patterns
   if (
-    /<\/?(html|head|body|div|span|p|a|ul|li|table|tr|td|button|form|input|section|nav|header|footer)[\s>]/i.test(
+    /<\/?(?:html|head|body|div|span|p|a|ul|li|table|tr|td|button|form|input|section|nav|header|footer)[\s>]/i.test(
       trimmed,
     )
   )
@@ -351,7 +351,7 @@ export function detectLanguage(code: string, filename?: string): string {
   // C / C++ patterns
   if (/#include\s+<iostream>/.test(trimmed)) scores.cpp += 14;
   if (/#include\s+<vector>/.test(trimmed)) scores.cpp += 12;
-  if (/\bstd::(cout|cin|endl|string|vector|map|unique_ptr)\b/.test(trimmed))
+  if (/\bstd::(?:cout|cin|endl|string|vector|map|unique_ptr)\b/.test(trimmed))
     scores.cpp += 10;
   if (/cout\s*<</.test(trimmed)) scores.cpp += 8;
   if (/\btemplate\s*</.test(trimmed)) scores.cpp += 8;
@@ -361,26 +361,24 @@ export function detectLanguage(code: string, filename?: string): string {
   if (/\bprintf\s*\(/.test(trimmed)) scores.c += 6;
 
   // C# patterns
-  if (/using\s+System(\.[a-zA-Z0-9_]+)*;/.test(trimmed)) scores.csharp += 12;
-  if (/namespace\s+[a-zA-Z0-9_.]+/.test(trimmed)) scores.csharp += 8;
-  if (/Console\.(WriteLine|Write)\s*\(/.test(trimmed)) scores.csharp += 10;
+  if (/using\s+System(?:\.\w+)*;/.test(trimmed)) scores.csharp += 12;
+  if (/namespace\s+[\w.]+/.test(trimmed)) scores.csharp += 8;
+  if (/Console\.(?:WriteLine|Write)\s*\(/.test(trimmed)) scores.csharp += 10;
 
   // Java patterns
   if (/public\s+static\s+void\s+main\s*\(\s*String/.test(trimmed))
     scores.java += 14;
-  if (/System\.(out|err)\.(println|print)/.test(trimmed)) scores.java += 10;
-  if (/package\s+[a-z]+(\.[a-z0-9_]+)+;/.test(trimmed)) scores.java += 8;
+  if (/System\.(?:out|err)\.(?:println|print)/.test(trimmed)) scores.java += 10;
+  if (/package\s+[a-z]+(?:\.[a-z0-9_]+)+;/.test(trimmed)) scores.java += 8;
 
   // Ruby patterns
-  if (/\battr_(accessor|reader|writer)\b/.test(trimmed)) scores.ruby += 10;
-  if (/\bdef\s+[a-zA-Z0-9_]+[!?]?(\s*\(.*\))?\s*\n/.test(trimmed))
-    scores.ruby += 6;
+  if (/\battr_(?:accessor|reader|writer)\b/.test(trimmed)) scores.ruby += 10;
+  if (/\bdef\s+\w+[!?]?(?:\s*\([^)]*\))?\s*\n/.test(trimmed)) scores.ruby += 6;
   if (/\bputs\s+/.test(trimmed)) scores.ruby += 4;
 
   // YAML patterns
-  if (/^[a-zA-Z0-9_-]+:\s*(.+)?$/m.test(trimmed)) {
-    const yamlMatches = (trimmed.match(/^[a-zA-Z0-9_-]+:\s*(.+)?$/gm) || [])
-      .length;
+  if (/^[\w-]+:(?:\s+\S.*)?$/m.test(trimmed)) {
+    const yamlMatches = (trimmed.match(/^[\w-]+:(?:\s+\S.*)?$/gm) || []).length;
     if (yamlMatches >= 2) scores.yaml += 8;
   }
   if (/^---\s*$/m.test(trimmed)) scores.yaml += 6;
@@ -402,19 +400,19 @@ export function detectLanguage(code: string, filename?: string): string {
   }
 
   // Markdown patterns
-  if (/^#+\s+.*$/m.test(trimmed)) scores.markdown += 6;
+  if (/^#+\s+(?:\S.*)?$/m.test(trimmed)) scores.markdown += 6;
   if (/^```[a-z]*$/m.test(trimmed)) scores.markdown += 8;
   if (/\[.*\]\(https?:\/\/[^)]+\)/.test(trimmed)) scores.markdown += 6;
 
   // Shell / Bash patterns
   if (
-    /\b(if\s+\[\s+.*\s+\];\s+then|fi|elif\s+\[\s+.*\s+\];\s+then)\b/.test(
+    /\b(?:if\s+\[[\s\S]*?\];\s+then|fi|elif\s+\[[\s\S]*?\];\s+then)\b/.test(
       trimmed,
     )
   )
     scores.bash += 10;
   if (
-    /\b(echo\s+['"]|chmod\s+|chown\s+|mkdir\s+-p|rm\s+-rf|sudo\s+)/.test(
+    /\b(?:echo\s+['"]|chmod\s+|chown\s+|mkdir\s+-p|rm\s+-rf|sudo\s+)/.test(
       trimmed,
     )
   )
@@ -425,34 +423,39 @@ export function detectLanguage(code: string, filename?: string): string {
   let hasTsFeatures = false;
   let hasJsxFeatures = false;
 
-  if (/\b(const|let|var)\s+[a-zA-Z0-9_]+\s*=\s*/.test(trimmed)) jsTsScore += 4;
-  if (/\bconsole\.(log|error|warn|info)\s*\(/.test(trimmed)) jsTsScore += 6;
-  if (/\bfunction\s+[a-zA-Z0-9_]*\s*\(/.test(trimmed)) jsTsScore += 5;
+  if (/\b(?:const|let|var)\s+\w+\s*=\s*/.test(trimmed)) jsTsScore += 4;
+  if (/\bconsole\.(?:log|error|warn|info)\s*\(/.test(trimmed)) jsTsScore += 6;
+  if (/\bfunction\s+(?:\w+\s*)?\(/.test(trimmed)) jsTsScore += 5;
   if (/=>/.test(trimmed)) jsTsScore += 3;
-  if (/\bimport\s+.*\s+from\s+['"][^'"]+['"]/.test(trimmed)) jsTsScore += 6;
-  if (/\bexport\s+(default\s+)?/.test(trimmed)) jsTsScore += 5;
+  if (
+    /\bimport\s+(?:\{[^}]*\}|[\w*]+)(?:,\s*(?:\{[^}]*\}|[\w*]+))*\s+from\s+['"][^'"]+['"]/.test(
+      trimmed,
+    )
+  )
+    jsTsScore += 6;
+  if (/\bexport\s+(?:default\s+)?/.test(trimmed)) jsTsScore += 5;
 
   // Check TypeScript indicators
-  if (/\b(interface|type)\s+[A-Z][a-zA-Z0-9_]*\s*(=|\{)/.test(trimmed)) {
+  if (/\b(?:interface|type)\s+[A-Z]\w*\s*(?:=|\{)/.test(trimmed)) {
     jsTsScore += 8;
     hasTsFeatures = true;
   }
   if (
-    /:\s*(string|number|boolean|any|unknown|never|void|Record<[^>]+>)\b/.test(
+    /:\s*(?:string|number|boolean|any|unknown|never|void|Record<[^>]+>)\b/.test(
       trimmed,
     )
   ) {
     jsTsScore += 6;
     hasTsFeatures = true;
   }
-  if (/\bas\s+[A-Z][a-zA-Z0-9_]*/.test(trimmed)) {
+  if (/\bas\s+[A-Z]\w*/.test(trimmed)) {
     jsTsScore += 4;
     hasTsFeatures = true;
   }
 
   // Check JSX indicators
   if (
-    /<\/?[A-Z][a-zA-Z0-9_]*(\s+[^>]*)?\/?>/.test(trimmed) ||
+    /<\/?[A-Z]\w*(?:\s[^>]*)?\/?>/.test(trimmed) ||
     /className=/.test(trimmed) ||
     /onClick=/.test(trimmed) ||
     /import\s+React\b/.test(trimmed)
