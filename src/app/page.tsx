@@ -24,7 +24,7 @@ async function PasteEditorContainer({
   return (
     <PasteEditor
       initialTitle={resolved.title || ""}
-      initialSyntax={resolved.syntax || "plaintext"}
+      initialSyntax={resolved.syntax || "auto"}
       initialContent={resolved.content || ""}
     />
   );
