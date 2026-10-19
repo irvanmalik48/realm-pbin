@@ -4,7 +4,6 @@ import {
   Code,
   Eye,
   EyeOff,
-  Globe,
   Hourglass,
   Keyboard,
   Lock,
@@ -53,7 +52,6 @@ export function PasteEditor({
   const [content, setContent] = React.useState(initialContent);
   const [syntax, setSyntax] = React.useState(initialSyntax);
   const [ttl, setTtl] = React.useState("7d");
-  const [isPublic, setIsPublic] = React.useState(true);
   const [enablePassword, setEnablePassword] = React.useState(false);
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
@@ -184,7 +182,6 @@ export function PasteEditor({
         title: title.trim() || "Untitled Paste",
         content: content.trim(),
         syntax,
-        is_public: isPublic,
         ttl,
         password:
           enablePassword && password.trim() ? password.trim() : undefined,
@@ -273,10 +270,10 @@ export function PasteEditor({
             </div>
           </div>
 
-          {/* Row 2: Expiration, Visibility, & Encryption */}
+          {/* Row 2: Expiration & Encryption */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-12 pt-3 border-t border-border/60">
             {/* Expiration (TTL) */}
-            <div className="sm:col-span-4">
+            <div className="sm:col-span-6">
               <Field>
                 <FieldLabel
                   htmlFor="ttl-select"
@@ -307,28 +304,8 @@ export function PasteEditor({
               </Field>
             </div>
 
-            {/* Visibility Switch */}
-            <div className="sm:col-span-4 flex flex-col justify-center">
-              <div className="flex items-center justify-between rounded-lg border border-border/60 p-3 bg-muted/20">
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-sm font-medium flex items-center gap-1.5">
-                    <Globe className="size-3.5 text-muted-foreground" />
-                    Public
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {isPublic ? "Visible in Explore" : "Only people with link"}
-                  </span>
-                </div>
-                <Switch
-                  checked={isPublic}
-                  onCheckedChange={setIsPublic}
-                  aria-label="Toggle public listing"
-                />
-              </div>
-            </div>
-
             {/* Password Protection Toggle */}
-            <div className="sm:col-span-4 flex flex-col justify-center">
+            <div className="sm:col-span-6 flex flex-col justify-center">
               <div className="flex items-center justify-between rounded-lg border border-border/60 p-3 bg-muted/20">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-medium flex items-center gap-1.5">
