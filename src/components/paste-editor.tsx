@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -32,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { detectLanguage } from "@/lib/language-detector";
 import { type CreatePastePayload, SUPPORTED_LANGUAGES } from "@/lib/types";
 import { formatBytes } from "@/lib/utils";
 
@@ -44,7 +46,7 @@ interface PasteEditorProps {
 export function PasteEditor({
   initialTitle = "",
   initialContent = "",
-  initialSyntax = "plaintext",
+  initialSyntax = "auto",
 }: PasteEditorProps) {
   const router = useRouter();
 
@@ -60,6 +62,21 @@ export function PasteEditor({
 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = React.useRef<HTMLDivElement>(null);
+
+  // Automatic language detection
+  const detectedSyntax = React.useMemo(() => {
+    return detectLanguage(content, title);
+  }, [content, title]);
+
+  const effectiveSyntax = syntax === "auto" ? detectedSyntax : syntax;
+
+  const detectedLanguageOption = React.useMemo(() => {
+    return SUPPORTED_LANGUAGES.find((l) => l.value === detectedSyntax);
+  }, [detectedSyntax]);
+
+  const activeLanguageOption = React.useMemo(() => {
+    return SUPPORTED_LANGUAGES.find((l) => l.value === effectiveSyntax);
+  }, [effectiveSyntax]);
 
   // Line count
   const lines = React.useMemo(() => {
@@ -155,7 +172,7 @@ export function PasteEditor({
     }
     setTitle("");
     setContent("");
-    setSyntax("plaintext");
+    setSyntax("auto");
     setPassword("");
     setEnablePassword(false);
     toast.info("Editor cleared");
@@ -178,10 +195,13 @@ export function PasteEditor({
     setIsSubmitting(true);
 
     try {
+      const finalSyntax =
+        syntax === "auto" ? detectedSyntax || "plaintext" : syntax;
+
       const payload: CreatePastePayload = {
         title: title.trim() || "Untitled Paste",
         content: content.trim(),
-        syntax,
+        syntax: finalSyntax,
         ttl,
         password:
           enablePassword && password.trim() ? password.trim() : undefined,
@@ -252,9 +272,22 @@ export function PasteEditor({
                   onValueChange={(val) => val && setSyntax(val)}
                 >
                   <SelectTrigger id="syntax-select" className="w-full">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder="Select language">
+                      {syntax === "auto"
+                        ? `Auto Detect (${detectedLanguageOption?.label || "Plain Text"})`
+                        : activeLanguageOption?.label || syntax}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Detection</SelectLabel>
+                      <SelectItem value="auto">
+                        Auto Detect{" "}
+                        {detectedLanguageOption
+                          ? `(${detectedLanguageOption.label})`
+                          : "(Plain Text)"}
+                      </SelectItem>
+                    </SelectGroup>
                     <SelectGroup>
                       <SelectLabel>Languages</SelectLabel>
                       {SUPPORTED_LANGUAGES.map((lang) => (
@@ -265,7 +298,11 @@ export function PasteEditor({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                <FieldDescription>Syntax highlighting format.</FieldDescription>
+                <FieldDescription>
+                  {syntax === "auto"
+                    ? `Auto-detected as ${detectedLanguageOption?.label || "Plain Text"}.`
+                    : "Syntax highlighting format."}
+                </FieldDescription>
               </Field>
             </div>
           </div>
@@ -390,7 +427,16 @@ export function PasteEditor({
               Editor
             </span>
             <span className="text-border">|</span>
-            <span className="font-mono text-xs text-muted-foreground">
+            <Badge
+              variant="outline"
+              className="font-mono text-[11px] font-normal px-2 py-0.5"
+            >
+              {syntax === "auto"
+                ? `Auto: ${detectedLanguageOption?.label || "Plain Text"}`
+                : activeLanguageOption?.label || syntax}
+            </Badge>
+            <span className="text-border hidden sm:inline">|</span>
+            <span className="font-mono text-xs text-muted-foreground hidden sm:inline">
               {lineCount} {lineCount === 1 ? "line" : "lines"} • {charCount}{" "}
               characters • {formatBytes(byteSize)}
             </span>
