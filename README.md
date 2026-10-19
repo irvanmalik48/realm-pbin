@@ -13,7 +13,6 @@ The code snippet and text sharing service for the Realm platform. Built with Nex
 - Line Highlighting & Permalinks: Click any line number to anchor and share a direct link (`#L10`).
 - Quick Actions: One-click copy, direct raw plaintext viewing, and file download.
 - Edit a Copy: Duplicate and modify existing snippets without overriding the original.
-- Community Explore Directory: Search and filter publicly shared snippets by keyword and programming language.
 - Clean Styling: Dark and light theme support with responsive layout for mobile and desktop screens.
 - Zero Login Required: Frictionless creation and instant viewing without account setup.
 
