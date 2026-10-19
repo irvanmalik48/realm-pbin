@@ -1,7 +1,6 @@
 import { Code2 } from "lucide-react";
 import { Suspense, ViewTransition } from "react";
 import { PasteEditor } from "@/components/paste-editor";
-import { RecentPastesSection } from "@/components/recent-pastes-section";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface HomePageProps {
@@ -99,9 +98,6 @@ export default function HomePage(props: HomePageProps) {
             <PasteEditorContainer searchParams={props.searchParams} />
           </ViewTransition>
         </Suspense>
-
-        {/* Community Public Snippets Feed */}
-        <RecentPastesSection />
       </div>
     </ViewTransition>
   );
