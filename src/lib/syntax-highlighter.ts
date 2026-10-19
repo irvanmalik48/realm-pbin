@@ -18,6 +18,7 @@ import "prismjs/components/prism-cpp";
 import "prismjs/components/prism-csharp";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-php";
+import "prismjs/components/prism-ruby";
 import "prismjs/components/prism-docker";
 import "prismjs/components/prism-nginx";
 import "prismjs/components/prism-diff";
@@ -27,8 +28,11 @@ export function highlightCode(code: string, syntax: string): string {
   const grammar =
     Prism.languages[normalizedSyntax] ||
     (normalizedSyntax === "sh" ? Prism.languages.bash : null) ||
+    (normalizedSyntax === "shell" ? Prism.languages.bash : null) ||
     (normalizedSyntax === "dockerfile" ? Prism.languages.docker : null) ||
     (normalizedSyntax === "env" ? Prism.languages.bash : null) ||
+    (normalizedSyntax === "cs" ? Prism.languages.csharp : null) ||
+    (normalizedSyntax === "golang" ? Prism.languages.go : null) ||
     Prism.languages.plaintext;
 
   if (!grammar) {
