@@ -13,6 +13,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { resolveSlugAndSyntaxOverride } from "@/lib/language-detector";
 import { PasteService } from "@/lib/paste-service";
+import { highlightCodeToLines } from "@/lib/syntax-highlighter";
 
 interface PastePageProps {
   params: Promise<{ slug: string }>;
@@ -83,6 +84,7 @@ async function PasteContent({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
+  const syntax = syntaxOverride || result.paste.syntax;
   const initialPaste = syntaxOverride
     ? {
         ...result.paste,
@@ -90,7 +92,16 @@ async function PasteContent({ params }: { params: Promise<{ slug: string }> }) {
       }
     : result.paste;
 
-  return <PasteViewInteractive initialPaste={initialPaste} />;
+  const initialLines = initialPaste.content
+    ? await highlightCodeToLines(initialPaste.content, syntax)
+    : [];
+
+  return (
+    <PasteViewInteractive
+      initialPaste={initialPaste}
+      initialLines={initialLines}
+    />
+  );
 }
 
 function PasteSkeleton() {
