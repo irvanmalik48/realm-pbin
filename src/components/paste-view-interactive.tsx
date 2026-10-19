@@ -41,7 +41,10 @@ export function PasteViewInteractive({
 
       if (res.ok) {
         const data = await res.json();
-        setPaste(data);
+        setPaste({
+          ...data,
+          syntax: initialPaste.syntax || data.syntax,
+        });
         setIsUnlocked(true);
         return true;
       }
