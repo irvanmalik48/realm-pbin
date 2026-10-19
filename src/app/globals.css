@@ -287,119 +287,21 @@ html.lenis body {
 }
 
 /* ==========================================================================
-   Syntax Highlighting Tokens (Prism CSS variables)
+   Syntax Highlighting (Shiki Dual Themes: GitHub Light & GitHub Dark)
    ========================================================================== */
 
-code[class*="language-"],
-pre[class*="language-"] {
-  color: var(--foreground);
-  font-family:
-    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  direction: ltr;
-  text-align: left;
-  white-space: pre;
-  word-spacing: normal;
-  word-break: normal;
-  tab-size: 2;
-  hyphens: none;
+.shiki-code {
+  color: var(--shiki-light, var(--foreground));
 }
 
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-  color: oklch(0.55 0 0);
-  font-style: italic;
+.shiki-code span {
+  color: var(--shiki-light, inherit);
 }
 
-.dark .token.comment,
-.dark .token.prolog,
-.dark .token.doctype,
-.dark .token.cdata {
-  color: oklch(0.6 0 0);
+.dark .shiki-code {
+  color: var(--shiki-dark, var(--foreground));
 }
 
-.token.punctuation {
-  color: oklch(0.45 0 0);
-}
-.dark .token.punctuation {
-  color: oklch(0.7 0 0);
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol {
-  color: oklch(0.55 0.2 260);
-}
-.dark .token.property,
-.dark .token.tag,
-.dark .token.boolean,
-.dark .token.number,
-.dark .token.constant,
-.dark .token.symbol {
-  color: oklch(0.75 0.16 260);
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin {
-  color: oklch(0.55 0.18 145);
-}
-.dark .token.selector,
-.dark .token.attr-name,
-.dark .token.string,
-.dark .token.char,
-.dark .token.builtin {
-  color: oklch(0.78 0.15 145);
-}
-
-.token.operator,
-.token.entity,
-.token.url {
-  color: oklch(0.55 0.18 80);
-}
-.dark .token.operator,
-.dark .token.entity,
-.dark .token.url {
-  color: oklch(0.78 0.15 80);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-  color: oklch(0.52 0.22 310);
-  font-weight: 500;
-}
-.dark .token.atrule,
-.dark .token.attr-value,
-.dark .token.keyword {
-  color: oklch(0.76 0.19 310);
-}
-
-.token.function,
-.token.class-name {
-  color: oklch(0.52 0.2 220);
-}
-.dark .token.function,
-.dark .token.class-name {
-  color: oklch(0.78 0.18 220);
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-  color: oklch(0.58 0.2 30);
-}
-.dark .token.regex,
-.dark .token.important,
-.dark .token.variable {
-  color: oklch(0.8 0.18 30);
+.dark .shiki-code span {
+  color: var(--shiki-dark, inherit);
 }
