@@ -11,7 +11,7 @@
     "lint:eslint": "eslint .",
     "knip": "knip",
     "format": "biome format --write",
-    "doctor": "npx -y react-doctor@latest -y"
+    "doctor": "react-doctor --yes"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -47,6 +47,7 @@
     "eslint-plugin-regexp": "^3.3.1",
     "knip": "^6.41.0",
     "oxlint": "^1.88.0",
+    "react-doctor": "^0.9.18",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.2"
