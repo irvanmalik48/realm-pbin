@@ -39,8 +39,13 @@ function AnalyticsTrackerInner() {
     }
     lastTrackedPathRef.current = fullPath;
 
+    const currentHost =
+      typeof window !== "undefined" && window.location.host
+        ? window.location.host.split(":")[0]
+        : "";
+
     const payload = {
-      site: "bin.irvanma.eu.org",
+      site: currentHost,
       path: fullPath,
       title: typeof document !== "undefined" ? document.title : "",
       referrer: typeof document !== "undefined" ? document.referrer : "",
