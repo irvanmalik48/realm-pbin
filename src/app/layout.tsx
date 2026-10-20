@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { CustomScrollbar } from "@/components/custom-scrollbar";
 import { Header } from "@/components/header";
 import { LenisProvider } from "@/components/lenis-provider";
@@ -85,6 +86,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
             <LenisProvider>
+              <AnalyticsTracker />
               <Header />
               <main className="flex flex-1 flex-col w-full">{children}</main>
               <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground w-full">
