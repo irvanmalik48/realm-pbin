@@ -80,7 +80,10 @@ export function CodeViewer({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, syntax }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Highlight failed");
+        return res.json();
+      })
       .then((data) => {
         if (isMounted && Array.isArray(data.lines)) {
           setHighlightedLines(data.lines);
