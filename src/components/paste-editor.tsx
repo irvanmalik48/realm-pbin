@@ -237,6 +237,7 @@ export function PasteEditor({
       }
     } catch {
       toast.error("An unexpected error occurred");
+    } finally {
       setIsSubmitting(false);
     }
   };
