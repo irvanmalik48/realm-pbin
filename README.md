@@ -7,7 +7,7 @@ The fast, minimalist code snippet and text sharing service for the Realm platfor
 ## Features
 
 - Full-Width Code Editor: Line numbers gutter, tab indentation support, drag-and-drop file loading, auto language detection, and keyboard shortcuts (`Ctrl+Enter` to save).
-- Multi-Language Syntax Highlighting: Highlighting across 20+ programming languages powered by PrismJS.
+- Multi-Language Syntax Highlighting: Highlighting across 20+ programming languages powered by Shiki with dual GitHub Light and GitHub Dark themes.
 - Password Protection & Encryption: Secure sensitive snippets using AES-GCM encryption with Argon2id key derivation.
 - Expiration Policies: Configurable snippet lifetimes (1 hour, 1 day, 7 days, or permanent).
 - Line Highlighting & Permalinks: Click any line number to anchor and share a direct line link (`#L10`).
